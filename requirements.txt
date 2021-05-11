@@ -9,3 +9,4 @@ scikit_learn==0.24.1
 vaderSentiment==3.3.2
 xlrd
 openpyxl
+Levenshtein
