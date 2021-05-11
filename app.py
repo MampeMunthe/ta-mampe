@@ -131,7 +131,7 @@ def preprocessing ():
 
         # ------ Word Tokenize ---------
         def multiword_tokenize(text):
-            mwe = open("File/mwe.txt", "r",).read().split("\n")
+            mwe = open("mwe.txt", "r",).read().split("\n")
             protected_tuples = [word_tokenize(word) for word in mwe]
             protected_tuples_underscore = ['_'.join(word) for word in protected_tuples]
             tokenizer = MWETokenizer(protected_tuples)
