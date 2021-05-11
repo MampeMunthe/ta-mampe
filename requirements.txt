@@ -10,3 +10,4 @@ vaderSentiment==3.3.2
 xlrd
 openpyxl
 Levenshtein
+pickle
