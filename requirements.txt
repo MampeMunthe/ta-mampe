@@ -1,0 +1,11 @@
+streamlit
+google_trans_new==1.1.9
+plotly==4.14.3
+nltk==3.5
+pandas==1.2.3
+google_api_python_client==2.0.2
+Sastrawi==1.0.1
+scikit_learn==0.24.1
+vaderSentiment==3.3.2
+xlrd
+openpyxl
