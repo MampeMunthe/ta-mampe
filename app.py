@@ -93,7 +93,7 @@ def check_video_id_and_scrape_comments():
             
 def preprocessing ():
         # ------ Case Folding ---------
-        df = pd.read_csv("./YouTube-Komentar.csv")
+        df = pd.read_csv("YouTube-Komentar.csv")
         df["Komentar"] = df["Komentar"].str.lower()
 
         def case_folding(text):
@@ -145,7 +145,7 @@ def preprocessing ():
         df["Tokenization"] = df["Case_Folding"].apply(multiword_tokenize)
 
         #-----SLANG WORD-----
-        normalized_word = pd.read_excel("./File/Normalisasi-Kata.xlsx")
+        normalized_word = pd.read_excel("Normalisasi-Kata.xlsx")
         normalized_word_dict = {}
         for index, row in normalized_word.iterrows():
             if row[0] not in normalized_word_dict:
@@ -157,10 +157,10 @@ def preprocessing ():
 
         #-----STOP WORD-------
         dump_stopwords = stopwords.words('indonesian')
-        extend_stopword = open("./File/extend_stopword.txt", "r",).read().split("\n")
+        extend_stopword = open("extend_stopword.txt", "r",).read().split("\n")
         for element_es in extend_stopword:
                 dump_stopwords.append(element_es)
-        delete_from_stopword = open("./File/delete_from_stopword.txt", "r",).read().split("\n")
+        delete_from_stopword = open("delete_from_stopword.txt", "r",).read().split("\n")
         for element in delete_from_stopword:
             if element in dump_stopwords:
                 dump_stopwords.remove(element)
@@ -188,8 +188,8 @@ def preprocessing ():
         
         df["Clean"] = df["Stemmer"].apply(join_text)
 
-        df_pos =pd.read_csv("./File/New-Positif.csv")
-        df_neg = pd.read_csv("./File/New-Negatif.csv")
+        df_pos =pd.read_csv("New-Positif.csv")
+        df_neg = pd.read_csv("New-Negatif.csv")
         hasil = []
         for item in df["Stemmer"]:
             count_p = 0
@@ -317,7 +317,7 @@ def main():
     if activities == "Input ID Video YouTube":
         check_video_id_and_scrape_comments()
         
-        file_csv = ("./YouTube-Komentar.csv")
+        file_csv = ("YouTube-Komentar.csv")
         if os.path.exists(file_csv):
             df = pd.read_csv(file_csv)
             st.dataframe(df)
@@ -326,7 +326,7 @@ def main():
            
     elif activities == "Analisa Sentimen Komentar":
         st.subheader("Analisa Sentimen Komentar")
-        file_csv = ("./YouTube-Komentar.csv")
+        file_csv = ("YouTube-Komentar.csv")
         if os.path.exists(file_csv):
               df = pd.read_csv(file_csv)
               st.dataframe(df)
@@ -337,7 +337,7 @@ def main():
         st.write("""=========================================================================""")
             
         if st.button("Lakukan Preprocessing"):
-            file_csv_pre = ("./YouTube-Komentar.csv")
+            file_csv_pre = ("YouTube-Komentar.csv")
             if os.path.exists(file_csv_pre):
                 df = pd.read_csv(file_csv_pre)
                 preprocessing()
