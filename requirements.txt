@@ -1,3 +1,4 @@
+pickle
 streamlit
 google_trans_new==1.1.9
 plotly==4.14.3
@@ -10,4 +11,3 @@ vaderSentiment==3.3.2
 xlrd
 openpyxl
 Levenshtein
-pickle
