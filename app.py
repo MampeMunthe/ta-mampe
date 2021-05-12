@@ -92,7 +92,7 @@ def check_video_id_and_scrape_comments():
 
             
 def preprocessing ():
-        # ------ Case Folding ---------
+        # ------ Case-Folding ---------
         df = pd.read_csv("YouTube-Komentar.csv")
         df["Komentar"] = df["Komentar"].str.lower()
 
