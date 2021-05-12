@@ -1,7 +1,7 @@
 import os,sklearn,plotly.express as px,pandas as pd,nltk,re,string,streamlit as st, requests, itertools,mpstemmer,pickle
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize,MWETokenizer
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split,cross_val_score,cross_val_predict,cross_validate
 from sklearn.metrics import f1_score,precision_score,recall_score,accuracy_score,confusion_matrix
 from sklearn.feature_extraction.text import TfidfVectorizer,CountVectorizer
 from sklearn.preprocessing import normalize
@@ -10,7 +10,7 @@ from apiclient.discovery import build
 from mpstemmer import MPStemmer
 def check_video_id_and_scrape_comments():
         st.subheader("Input ID Video YouTube")
-        ID = st.text_input(label="ID")
+        ID = st.text_input(" ")
         if st.button("Enter"):
             checker_url = "https://www.youtube.com/oembed?url=http://www.youtube.com/watch?v="
             video_url = checker_url + ID
@@ -88,7 +88,7 @@ def check_video_id_and_scrape_comments():
                 df = df.drop(0)
                 st.write("Data Komentar Berhasil diScrape Sebanyak:",len(df.index),"Komentar")
             else:
-                st.warning("ID Video yang Anda masukkan tidak valid")
+                st.write("ID Video yang Anda masukkan tidak valid")
 
             
 def preprocessing ():
@@ -131,7 +131,7 @@ def preprocessing ():
 
         # ------ Word Tokenize ---------
         def multiword_tokenize(text):
-            mwe = open("mwe.txt", "r",).read().split("\n")
+            mwe = open("File/mwe.txt", "r",).read().split("\n")
             protected_tuples = [word_tokenize(word) for word in mwe]
             protected_tuples_underscore = ['_'.join(word) for word in protected_tuples]
             tokenizer = MWETokenizer(protected_tuples)
@@ -214,18 +214,14 @@ def preprocessing ():
             else:
                 hasil.append(0)
 
-        df["Label-Kamus"] = hasil
+        df["Sentimen"] = hasil
 
-        df_akhir =pd.concat([df["Komentar"],df["Case_Folding"],df["Tokenization"],df["Normalisasi"],df["Filter"],df["Stemmer"]],axis=1)
+        df_akhir =pd.concat([df["Komentar"],df["Case_Folding"],df["Tokenization"],df["Normalisasi"],df["Filter"],df["Stemmer"],
+        df["Clean"]],axis=1)
         st.subheader("Hasil Preprocessing Data")
         st.dataframe(df_akhir)
-        
-        # st.subheader("Hasil")
-        # sentiment_count = df["Label-Kamus"].value_counts()
-        # Sentiment_count = pd.DataFrame({"Label-Kamus" :sentiment_count.index, "Jumlah" :sentiment_count.values})
-        # st.write(Sentiment_count)
 
-        df.drop(df.index[df["Label-Kamus"] == 0 ], inplace = True)
+        df.drop(df.index[df["Sentimen"] == 0 ], inplace = True)
 
         data_k = df["Clean"]
         with open("Tfidf.pkl", 'rb') as file_tfidf:
@@ -241,24 +237,20 @@ def preprocessing ():
                 result_predict.append("Positif")
             else:
                 result_predict.append("Negatif")
-        df["Label-Model"] = result_predict
+        df["Sentimen"] = result_predict
 
-        st.subheader("Hasil")
-        sentiment_count = df["Label-Model"].value_counts()
-        Sentiment_count = pd.DataFrame({"Label-Model" :sentiment_count.index, "Jumlah" :sentiment_count.values})
+        st.subheader("Hasil Sentimen")
+        sentiment_count = df["Sentimen"].value_counts()
+        Sentiment_count = pd.DataFrame({"Sentimen" :sentiment_count.index, "Jumlah" :sentiment_count.values})
         st.write(Sentiment_count)
 
         st.subheader("Persentase Analisis Sentimen Komentar YouTube")
-        sentiment_count = df["Label-Model"].value_counts()
-        sentiment_count = pd.DataFrame({"Sentimen" :sentiment_count.index, "Label-Model" :sentiment_count.values})
-        fig = px.pie(sentiment_count, values="Label-Model", names="Sentimen")
+        fig = px.pie(Sentiment_count, values="Jumlah", names="Sentimen")
         st.plotly_chart(fig)
         
-        df = pd.concat([df["Komentar"],df["Label-Model"]],axis=1)
-        st.subheader("Hasil Data Sebelumnya")
+        df = pd.concat([df["Komentar"],df["Sentimen"]],axis=1)
+        st.subheader("Hasil Analisis Sentimen Komentar YouTube")
         st.table(df)
-        df.to_csv("Labeling-Model.csv",index=False)
-
 def loadpage(): 
             st.markdown("""
             <div>
@@ -307,26 +299,23 @@ def loadpage():
                     </div>
                 </div>              
             """,unsafe_allow_html=True)
-            
-
 def main():
     st.title("Analisis Sentimen Komentar Pada Saluran Youtube Food Vlogger Berbahasa Indonesia Menggunakan Algoritma Naïve Bayes")
 
-    activities = st.sidebar.selectbox("Pilih Menu",( "Input ID Video YouTube","Analisa Sentimen Komentar","Tentang"))
+    activities = st.sidebar.selectbox("Pilih Menu",( "Input ID Video YouTube","Analisis Sentimen Komentar","Tentang"))
 
     if activities == "Input ID Video YouTube":
         check_video_id_and_scrape_comments()
-        
-        file_csv = ("YouTube-Komentar.csv")
+        file_csv = ("./YouTube-Komentar.csv")
         if os.path.exists(file_csv):
             df = pd.read_csv(file_csv)
             st.dataframe(df)
         else:
             st.info("""Data Komentar Belum Ada, lakukan Scrape Komentar Dulu""") 
            
-    elif activities == "Analisa Sentimen Komentar":
-        st.subheader("Analisa Sentimen Komentar")
-        file_csv = ("YouTube-Komentar.csv")
+    elif activities == "Analisis Sentimen Komentar":
+        st.subheader("Data Komentar YouTube")
+        file_csv = ("./YouTube-Komentar.csv")
         if os.path.exists(file_csv):
               df = pd.read_csv(file_csv)
               st.dataframe(df)
@@ -337,22 +326,12 @@ def main():
         st.write("""=========================================================================""")
             
         if st.button("Lakukan Preprocessing"):
-            file_csv_pre = ("YouTube-Komentar.csv")
+            file_csv_pre = ("./YouTube-Komentar.csv")
             if os.path.exists(file_csv_pre):
                 df = pd.read_csv(file_csv_pre)
                 preprocessing()
             else:
                st.warning("""Tidak Ditemukan File Data Komentar, lakukan Scrape Komentar Dulu""") 
-        # if st.checkbox("Tampilkan Analisis Data Sebelumnya "):
-        #     file_csv = ("./Labeling-Model.csv")
-        #     if os.path.exists(file_csv):
-        #         train_data()
-        #         df = pd.read_csv(file_csv)
-        #         df = pd.concat([df["Komentar"],df["Label"]],axis=1)
-        #         st.subheader("Hasil Data Sebelumnya")
-        #         st.table(df)
-        #     else:
-        #        st.warning("""Maaf Data Belum Ada""") 
     else:
         loadpage() 
 
