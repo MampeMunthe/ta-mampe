@@ -1,10 +1,9 @@
 streamlit
-google_trans_new==1.1.9
-plotly==4.14.3
-nltk==3.5
-pandas==1.2.3
-google_api_python_client==2.0.2
-scikit_learn==0.24.1
+plotly
+nltk
+pandas
+google_api_python_client
+scikit_learn
 xlrd
 openpyxl
 Levenshtein
