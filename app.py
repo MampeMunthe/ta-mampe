@@ -252,10 +252,13 @@ def preprocessing ():
         fig = px.pie(Sentiment_count, values="Jumlah", names="Sentimen")
         st.plotly_chart(fig)
         
+        df.to_csv("Labeling-Model.csv",index=False)
+        file_csv = ("./Labeling-Model.csv")
+        df = pd.read_csv(file_csv)
         df = pd.concat([df["Komentar"],df["Sentimen"]],axis=1)
         st.subheader("Hasil Analisis Sentimen Komentar YouTube")
         st.table(df)
-        df.to_csv("Labeling-Model.csv",index=False)
+       
 
 def loadpage(): 
             st.markdown("""
