@@ -251,8 +251,7 @@ def preprocessing ():
         st.subheader("Persentase Analisis Sentimen Komentar YouTube")
         fig = px.pie(Sentiment_count, values="Jumlah", names="Sentimen")
         st.plotly_chart(fig)
-        
-        #file csv
+       
         df.to_csv("Labeling-Model.csv",index=False)
         file_csv = ("./Labeling-Model.csv")
         df = pd.read_csv(file_csv)
