@@ -1,4 +1,4 @@
-import os,sklearn,plotly.express as px,pandas as pd,nltk,re,string,streamlit as st, requests, itertools,mpstemmer,pickle
+import os,sklearn,plotly.express as px,pandas as pd,nltk,re,string,streamlit as st, requests, itertools,mpstemmer,pickle, numpy as np
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize,MWETokenizer
 from sklearn.model_selection import train_test_split,cross_val_score,cross_val_predict,cross_validate
@@ -89,11 +89,10 @@ def check_video_id_and_scrape_comments():
                 st.write("Data Komentar Berhasil diScrape Sebanyak:",len(df.index),"Komentar")
             else:
                 st.write("ID Video yang Anda masukkan tidak valid")
-
-            
+    
 def preprocessing ():
         # ------ Case-Folding ---------
-        df = pd.read_csv("YouTube-Komentar.csv")
+        df = pd.read_csv("./YouTube-Komentar.csv")
         df["Komentar"] = df["Komentar"].str.lower()
 
         def case_folding(text):
@@ -131,7 +130,7 @@ def preprocessing ():
 
         # ------ Word Tokenize ---------
         def multiword_tokenize(text):
-            mwe = open("mwe.txt", "r",).read().split("\n")
+            mwe = open("File/mwe.txt", "r",).read().split("\n")
             protected_tuples = [word_tokenize(word) for word in mwe]
             protected_tuples_underscore = ['_'.join(word) for word in protected_tuples]
             tokenizer = MWETokenizer(protected_tuples)
@@ -145,7 +144,7 @@ def preprocessing ():
         df["Tokenization"] = df["Case_Folding"].apply(multiword_tokenize)
 
         #-----SLANG WORD-----
-        normalized_word = pd.read_excel("Normalisasi-Kata.xlsx")
+        normalized_word = pd.read_excel("./File/Normalisasi-Kata.xlsx")
         normalized_word_dict = {}
         for index, row in normalized_word.iterrows():
             if row[0] not in normalized_word_dict:
@@ -157,10 +156,10 @@ def preprocessing ():
 
         #-----STOP WORD-------
         dump_stopwords = stopwords.words('indonesian')
-        extend_stopword = open("extend_stopword.txt", "r",).read().split("\n")
+        extend_stopword = open("./File/extend_stopword.txt", "r",).read().split("\n")
         for element_es in extend_stopword:
                 dump_stopwords.append(element_es)
-        delete_from_stopword = open("delete_from_stopword.txt", "r",).read().split("\n")
+        delete_from_stopword = open("./File/delete_from_stopword.txt", "r",).read().split("\n")
         for element in delete_from_stopword:
             if element in dump_stopwords:
                 dump_stopwords.remove(element)
@@ -188,8 +187,8 @@ def preprocessing ():
         
         df["Clean"] = df["Stemmer"].apply(join_text)
 
-        df_pos =pd.read_csv("New-Positif.csv")
-        df_neg = pd.read_csv("New-Negatif.csv")
+        df_pos =pd.read_csv("./File/New-Positif.csv")
+        df_neg = pd.read_csv("./File/New-Negatif.csv")
         hasil = []
         for item in df["Stemmer"]:
             count_p = 0
@@ -220,6 +219,11 @@ def preprocessing ():
         df["Clean"]],axis=1)
         st.subheader("Hasil Preprocessing Data")
         st.dataframe(df_akhir)
+        
+        # st.subheader("Hasil")
+        # sentiment_count = df["Label-Kamus"].value_counts()
+        # Sentiment_count = pd.DataFrame({"Label-Kamus" :sentiment_count.index, "Jumlah" :sentiment_count.values})
+        # st.write(Sentiment_count)
 
         df.drop(df.index[df["Sentimen"] == 0 ], inplace = True)
 
@@ -251,25 +255,26 @@ def preprocessing ():
         df = pd.concat([df["Komentar"],df["Sentimen"]],axis=1)
         st.subheader("Hasil Analisis Sentimen Komentar YouTube")
         st.table(df)
+        df.to_csv("Labeling-Model.csv",index=False)
+
 def loadpage(): 
             st.markdown("""
             <div>
                 <!---<h1 class="title">Abstrak</h1>--->
-                <p class="abstrak">
+                <p class="abstrak", align="justify">
                 Saat ini YouTube merupakan salah satu media sosial yang paling populer. 
-                Hampir semua kalangan masyarakat saat ini menggunakan Youtube. Youtube 
-                merupakan media sosial yang dapat digunakan untuk mengirim, melihat dan 
-                berbagi video. Pengguna YouTube yang menonton video YouTube dapat 
-                menyampaikan opininya melalui kolom komentar pada YouTube. Komentar yang 
-                disampaikan dapat digunakan sebagai analisis pada video YouTube tersebut. Dari 
-                analisis ini dapat dijadikan sebagai tolak ukur terhadap video yang dibuat untuk 
-                mendapatkan feedback dari penonton, positif atau negatif. Untuk mengatasi 
-                permasalahan klasifikasi komentar pengguna YouTube dirancanglah sebuah sistem 
-                analisis komentar berdasarkan filter YouTube dengan algoritma Naïve Bayes. 
-                Sistem analisis komentar pada YouTube yang dibuat akan menghasilkan klasifikasi 
-                dari komentar-komentar pengguna YouTube dengan kategori positif dan negatif. 
-                Sistem ini diharapkan dapat menjadi bahan evaluasi para konten kreator untuk 
-                meningkatkan kualitas dari saluran YouTubenya.</p>
+                Hampir semua kalangan masyarakat saat ini menggunakan Youtube. Youtube merupakan
+                 media sosial yang dapat digunakan untuk mengirim, melihat dan berbagi video. 
+                 Pengguna YouTube yang menonton video YouTube dapat menyampaikan opininya melalui 
+                 kolom komentar pada YouTube. Komentar yang disampaikan dapat digunakan sebagai 
+                 analisis pada video YouTube tersebut. Dari analisis ini dapat dijadikan sebagai 
+                 tolak ukur terhadap video yang dibuat untuk mendapatkan feedback dari penonton, 
+                 positif atau negatif. Untuk mengatasi permasalahan klasifikasi komentar pengguna 
+                 YouTube dirancanglah sebuah sistem analisis komentar berdasarkan filter YouTube 
+                 dengan algoritma Naïve Bayes. Sistem analisis komentar pada YouTube yang dibuat 
+                 akan menghasilkan klasifikasi dari komentar-komentar pengguna YouTube dengan kategori
+                  positif dan negatif. Sistem ini diharapkan dapat menjadi bahan evaluasi para konten 
+                  kreator untuk meningkatkan kualitas dari saluran YouTubenya.</p>
             </div>               
             """,unsafe_allow_html=True)
             if st.checkbox("Tentang Penulis dan Pembimbing"):
@@ -299,6 +304,8 @@ def loadpage():
                     </div>
                 </div>              
             """,unsafe_allow_html=True)
+            
+
 def main():
     st.title("Analisis Sentimen Komentar Pada Saluran Youtube Food Vlogger Berbahasa Indonesia Menggunakan Algoritma Naïve Bayes")
 
@@ -332,6 +339,21 @@ def main():
                 preprocessing()
             else:
                st.warning("""Tidak Ditemukan File Data Komentar, lakukan Scrape Komentar Dulu""") 
+        if st.checkbox("Tampilkan Analisis Data Sebelumnya "):
+            file_csv = ("./Labeling-Model.csv")
+            if os.path.exists(file_csv):
+                df = pd.read_csv(file_csv)
+                df = pd.concat([df["Komentar"],df["Sentimen"]],axis=1)
+                st.subheader("Hasil Sentimen")
+                sentiment_count = df["Sentimen"].value_counts()
+                Sentiment_count = pd.DataFrame({"Sentimen" :sentiment_count.index, "Jumlah" :sentiment_count.values})
+                st.write(Sentiment_count)
+                st.subheader("Persentase Analisis Sentimen Komentar YouTube")
+                fig = px.pie(Sentiment_count, values="Jumlah", names="Sentimen")
+                st.plotly_chart(fig)
+                st.table(df)
+            else:
+               st.warning("""Maaf Data Belum Ada""") 
     else:
         loadpage() 
 
