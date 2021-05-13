@@ -130,7 +130,7 @@ def preprocessing ():
 
         # ------ Word Tokenize ---------
         def multiword_tokenize(text):
-            mwe = open("File/mwe.txt", "r",).read().split("\n")
+            mwe = open("./File/mwe.txt", "r",).read().split("\n")
             protected_tuples = [word_tokenize(word) for word in mwe]
             protected_tuples_underscore = ['_'.join(word) for word in protected_tuples]
             tokenizer = MWETokenizer(protected_tuples)
@@ -228,11 +228,11 @@ def preprocessing ():
         df.drop(df.index[df["Sentimen"] == 0 ], inplace = True)
 
         data_k = df["Clean"]
-        with open("Tfidf.pkl", 'rb') as file_tfidf:
+        with open("./Model/Tfidf.pkl", 'rb') as file_tfidf:
             tfdif = pickle.load(file_tfidf)
         transform_tfidf = tfdif.transform(data_k).toarray()
 
-        with open("Model.pkl", 'rb') as file:  
+        with open("./Model/Model.pkl", 'rb') as file:  
             model = pickle.load(file)
         predict = model.predict(transform_tfidf)
         result_predict = []
