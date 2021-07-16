@@ -273,9 +273,7 @@ def loadpage():
                 akan menghasilkan klasifikasi dari komentar-komentar pengguna YouTube dengan kategori positif dan negatif. Sistem ini diharapkan dapat menjadi bahan evaluasi 
                 para pembuat konten untuk meningkatkan kualitas dari saluran YouTubenya. 
                 Dari model yang telah dibuat dengan data komentar sebanyak 1702 komentar yang terdiri dari 848 data positif dan 854 data negatif,
-                didapatkan hasil akurasi 90.60% dengan perbandingan data testing dan training 30:70.
-                
-                </p>
+                didapatkan hasil akurasi 90.60% dengan perbandingan data testing dan training 30:70.</p>
             </div>               
             """,unsafe_allow_html=True)
             if st.checkbox("Tentang Penulis dan Pembimbing"):
