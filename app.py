@@ -265,19 +265,17 @@ def loadpage():
             <div>
                 <!---<h1 class="title">Abstrak</h1>--->
                 <p class="abstrak", align="justify">
-                Saat ini YouTube merupakan salah satu media sosial yang paling populer. 
-                Hampir semua kalangan masyarakat saat ini menggunakan Youtube. Youtube merupakan
-                 media sosial yang dapat digunakan untuk mengirim, melihat dan berbagi video. 
-                 Pengguna YouTube yang menonton video YouTube dapat menyampaikan opininya melalui 
-                 kolom komentar pada YouTube. Komentar yang disampaikan dapat digunakan sebagai 
-                 analisis pada video YouTube tersebut. Dari analisis ini dapat dijadikan sebagai 
-                 tolak ukur terhadap video yang dibuat untuk mendapatkan feedback dari penonton, 
-                 positif atau negatif. Untuk mengatasi permasalahan klasifikasi komentar pengguna 
-                 YouTube dirancanglah sebuah sistem analisis komentar berdasarkan filter YouTube 
-                 dengan algoritma Naïve Bayes. Sistem analisis komentar pada YouTube yang dibuat 
-                 akan menghasilkan klasifikasi dari komentar-komentar pengguna YouTube dengan kategori
-                  positif dan negatif. Sistem ini diharapkan dapat menjadi bahan evaluasi para konten 
-                  kreator untuk meningkatkan kualitas dari saluran YouTubenya.</p>
+                Saat ini YouTube merupakan salah satu media sosial yang paling populer. Youtube merupakan media sosial yang dapat digunakan untuk mengirim, 
+                melihat dan membagikan video. Pengguna YouTube yang menonton video YouTube dapat menyampaikan opininya melalui kolom komentar pada YouTube. 
+                Komentar yang disampaikan dapat digunakan sebagai analisis pada video YouTube tersebut. Dari analisis ini dapat dijadikan sebagai tolak ukur terhadap 
+                video yang dibuat untuk mendapatkan feedback dari penonton, positif atau negatif. Untuk mengatasi permasalahan klasifikasi komentar pengguna YouTube 
+                maka dirancang sebuah sistem analisis komentar berdasarkan filter YouTube dengan algoritma Naïve Bayes. Sistem analisis komentar pada YouTube yang dibuat
+                akan menghasilkan klasifikasi dari komentar-komentar pengguna YouTube dengan kategori positif dan negatif. Sistem ini diharapkan dapat menjadi bahan evaluasi 
+                para pembuat konten untuk meningkatkan kualitas dari saluran YouTubenya. 
+                Dari model yang telah dibuat dengan data komentar sebanyak 1702 komentar yang terdiri dari 848 data positif dan 854 data negatif,
+                didapatkan hasil akurasi 90.60% dengan perbandingan data testing dan training 30:70.
+                
+                </p>
             </div>               
             """,unsafe_allow_html=True)
             if st.checkbox("Tentang Penulis dan Pembimbing"):
