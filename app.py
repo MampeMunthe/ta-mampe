@@ -1,4 +1,4 @@
-import os,sklearn,plotly.express as px,pandas as pd,nltk,re,string,streamlit as st, requests, itertools,mpstemmer,pickle, numpy as np
+import matplotlib.pyplot as plt, os,sklearn,plotly.express as px,pandas as pd,nltk,re,string,streamlit as st, requests, itertools,mpstemmer,pickle, numpy as np
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize,MWETokenizer
 from sklearn.model_selection import train_test_split,cross_val_score,cross_val_predict,cross_validate
@@ -8,7 +8,9 @@ from sklearn.preprocessing import normalize
 from sklearn.naive_bayes import MultinomialNB
 from apiclient.discovery import build
 from mpstemmer import MPStemmer
+import time
 def check_video_id_and_scrape_comments():
+        start1 = time.time()
         st.subheader("Input ID Video YouTube")
         ID = st.text_input(" ")
         if st.button("Enter"):
@@ -89,9 +91,15 @@ def check_video_id_and_scrape_comments():
                 st.write("Data Komentar Berhasil diScrape Sebanyak:",len(df.index),"Komentar")
             else:
                 st.write("ID Video yang Anda masukkan tidak valid")
+            end1 = time.time()
+            result_time1 = end1 - start1
+            st.write("Waktu proses scraping komentar YouTube :",result_time1,"s")
+           
+            
     
 def preprocessing ():
         # ------ Case-Folding ---------
+        start2 = time.time()
         df = pd.read_csv("./YouTube-Komentar.csv")
         df["Komentar"] = df["Komentar"].str.lower()
 
@@ -130,7 +138,7 @@ def preprocessing ():
 
         # ------ Word Tokenize ---------
         def multiword_tokenize(text):
-            mwe = open("./File/mwe.txt", "r",).read().split("\n")
+            mwe = open("File/mwe.txt", "r",).read().split("\n")
             protected_tuples = [word_tokenize(word) for word in mwe]
             protected_tuples_underscore = ['_'.join(word) for word in protected_tuples]
             tokenizer = MWETokenizer(protected_tuples)
@@ -228,11 +236,11 @@ def preprocessing ():
         df.drop(df.index[df["Sentimen"] == 0 ], inplace = True)
 
         data_k = df["Clean"]
-        with open("./Model/Tfidf.pkl", 'rb') as file_tfidf:
+        with open("Tfidf.pkl", 'rb') as file_tfidf:
             tfdif = pickle.load(file_tfidf)
         transform_tfidf = tfdif.transform(data_k).toarray()
 
-        with open("./Model/Model.pkl", 'rb') as file:  
+        with open("Model.pkl", 'rb') as file:  
             model = pickle.load(file)
         predict = model.predict(transform_tfidf)
         result_predict = []
@@ -242,6 +250,10 @@ def preprocessing ():
             else:
                 result_predict.append("Negatif")
         df["Sentimen"] = result_predict
+        end2 = time.time()
+        result_time2 = end2 - start2
+        st.write("Waktu proses program :",result_time2,"s")
+
 
         st.subheader("Hasil Sentimen")
         sentiment_count = df["Sentimen"].value_counts()
@@ -251,13 +263,14 @@ def preprocessing ():
         st.subheader("Persentase Analisis Sentimen Komentar YouTube")
         fig = px.pie(Sentiment_count, values="Jumlah", names="Sentimen")
         st.plotly_chart(fig)
-       
+        
         df.to_csv("Labeling-Model.csv",index=False)
         file_csv = ("./Labeling-Model.csv")
         df = pd.read_csv(file_csv)
         df = pd.concat([df["Komentar"],df["Sentimen"]],axis=1)
         st.subheader("Hasil Analisis Sentimen Komentar YouTube")
         st.table(df)
+
        
 
 def loadpage(): 
@@ -265,15 +278,19 @@ def loadpage():
             <div>
                 <!---<h1 class="title">Abstrak</h1>--->
                 <p class="abstrak", align="justify">
-                Saat ini YouTube merupakan salah satu media sosial yang paling populer. Youtube merupakan media sosial yang dapat digunakan untuk mengirim, 
-                melihat dan membagikan video. Pengguna YouTube yang menonton video YouTube dapat menyampaikan opininya melalui kolom komentar pada YouTube. 
-                Komentar yang disampaikan dapat digunakan sebagai analisis pada video YouTube tersebut. Dari analisis ini dapat dijadikan sebagai tolak ukur terhadap 
-                video yang dibuat untuk mendapatkan feedback dari penonton, positif atau negatif. Untuk mengatasi permasalahan klasifikasi komentar pengguna YouTube 
-                maka dirancang sebuah sistem analisis komentar berdasarkan filter YouTube dengan algoritma Naïve Bayes. Sistem analisis komentar pada YouTube yang dibuat
-                akan menghasilkan klasifikasi dari komentar-komentar pengguna YouTube dengan kategori positif dan negatif. Sistem ini diharapkan dapat menjadi bahan evaluasi 
-                para pembuat konten untuk meningkatkan kualitas dari saluran YouTubenya. 
-                Dari model yang telah dibuat dengan data komentar sebanyak 1702 komentar yang terdiri dari 848 data positif dan 854 data negatif,
-                didapatkan hasil akurasi 90.60% dengan perbandingan data testing dan training 30:70.</p>
+                Saat ini YouTube merupakan salah satu media sosial yang paling populer. 
+                Hampir semua kalangan masyarakat saat ini menggunakan Youtube. Youtube merupakan
+                 media sosial yang dapat digunakan untuk mengirim, melihat dan berbagi video. 
+                 Pengguna YouTube yang menonton video YouTube dapat menyampaikan opininya melalui 
+                 kolom komentar pada YouTube. Komentar yang disampaikan dapat digunakan sebagai 
+                 analisis pada video YouTube tersebut. Dari analisis ini dapat dijadikan sebagai 
+                 tolak ukur terhadap video yang dibuat untuk mendapatkan feedback dari penonton, 
+                 positif atau negatif. Untuk mengatasi permasalahan klasifikasi komentar pengguna 
+                 YouTube dirancanglah sebuah sistem analisis komentar berdasarkan filter YouTube 
+                 dengan algoritma Naïve Bayes. Sistem analisis komentar pada YouTube yang dibuat 
+                 akan menghasilkan klasifikasi dari komentar-komentar pengguna YouTube dengan kategori
+                 positif dan negatif. Sistem ini diharapkan dapat menjadi bahan evaluasi para konten 
+                  kreator untuk meningkatkan kualitas dari saluran YouTubenya.</p>
             </div>               
             """,unsafe_allow_html=True)
             if st.checkbox("Tentang Penulis dan Pembimbing"):
@@ -308,7 +325,7 @@ def loadpage():
 def main():
     st.title("Analisis Sentimen Komentar Pada Saluran Youtube Food Vlogger Berbahasa Indonesia Menggunakan Algoritma Naïve Bayes")
 
-    activities = st.sidebar.selectbox("Pilih Menu",( "Input ID Video YouTube","Analisis Sentimen Komentar","Tentang"))
+    activities = st.sidebar.selectbox("Pilih Menu",("Input ID Video YouTube","Analisis Sentimen Komentar","Tentang"))
 
     if activities == "Input ID Video YouTube":
         check_video_id_and_scrape_comments()
