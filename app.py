@@ -1,5 +1,5 @@
-import matplotlib.pyplot as plt, os,sklearn,plotly.express as px,pandas as pd,nltk,re,string,streamlit as st, requests, itertools,mpstemmer,pickle, numpy as np
-from nltk.corpus import stopwords
+import os,sklearn,plotly.express as px,pandas as pd,nltk,re,string,streamlit as st, requests, itertools,mpstemmer,pickle, numpy as np
+from nltk.corpus import stopwords 
 from nltk.tokenize import word_tokenize,MWETokenizer
 from sklearn.model_selection import train_test_split,cross_val_score,cross_val_predict,cross_validate
 from sklearn.metrics import f1_score,precision_score,recall_score,accuracy_score,confusion_matrix
